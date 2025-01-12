@@ -50,3 +50,15 @@ dotnet ef migrations add <MIGRATION-NAME> --project core/PermissionManagerCore.c
 ## Languages
 - **C#**: All program code is written in C#
 - **XML**: `.csproj` uses XML for project configuration
+
+## Design Philosophy Q/A
+```
+Q: Should I check for a specific permission or membership to a group?
+
+A: NEVER check for membership to a group, this is not a function of the API and for good reason. Imagine you have a webserver and you want to check if a user can upload data, and you have decided that only members of the admin group can upload data. While the server is running, the only way to allow a new user to upload data is to make them an admin. There is a very high likelihood that they do not need all of the other permissions that admins have, but you have no choice. The better solution is to create a permission such as canUploadData, and give the admins this permission. Now if a new user needs to upload data, we can give them the canUploadData permission directly without making them an admin.
+```
+```
+Q: Why can you not remove a permission that is granted to a user via a group without removing them from the group?
+
+A: Group members and their Permissions should be predictable and congruent. If you could be a member of a group while simultaneously having none of the permissions which the group allows, the membership would mean nothing. Consider lessening the number of permissions a group has if this is a frequent problem.
+```

@@ -60,8 +60,23 @@ class Program
         Console.ForegroundColor = ConsoleColor.Gray;
         Console.ResetColor();
 
-        // Loads or creates demo.db
+        
+        string db = "test.db";
         PermissionManager.Init();
+        LoadError load_result = PermissionManager.Load(db);
+        if (load_result == LoadError.None){
+            PRINT_COLORS((GREEN,"Successfully loaded test.db\n"));
+        }
+        else if (load_result == LoadError.DoesNotExist){
+            PRINT_COLORS((YELLOW,"Creating database...\n"));
+            PermissionManager.Create(db);
+            PermissionManager.Load(db);
+        }
+        else if (load_result == LoadError.SqliteError){
+            PRINT_COLORS((RED,"Unrecoverable error, dumping log"));
+            PermissionManager.WriteLog();
+            return;
+        }
         PermissionManager.AddUser("Anthony");
         PermissionManager.AddUser("Bob");
 
